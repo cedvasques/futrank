@@ -38,3 +38,15 @@ npm run lint
 ## Persistencia
 
 Os dados ficam em `localStorage` na chave `futrank-storage-v1`. O app nao reseta jogadores automaticamente.
+
+## Deploy no GitHub Pages
+
+O projeto esta configurado para publicar em `https://cedvasques.github.io/futrank/` usando GitHub Actions.
+
+No GitHub, habilite:
+
+1. `Settings` > `Pages`
+2. Em `Build and deployment`, selecione `Source: GitHub Actions`
+3. Volte para `Actions` e acompanhe o workflow `Deploy to GitHub Pages`
+
+Se o repositorio estiver privado, o GitHub Pages depende do plano da conta. No GitHub Free, use repositorio publico para publicar pelo Pages.

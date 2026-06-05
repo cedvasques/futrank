@@ -2,14 +2,14 @@
   "name": "FutRank",
   "short_name": "FutRank",
   "description": "PWA para organizar peladas, avaliacoes e times equilibrados.",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "/futrank/",
+  "scope": "/futrank/",
   "display": "standalone",
   "background_color": "#060807",
   "theme_color": "#34d399",
   "icons": [
     {
-      "src": "/icons/icon.svg",
+      "src": "/futrank/icons/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
