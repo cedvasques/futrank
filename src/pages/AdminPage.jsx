@@ -1,5 +1,6 @@
-import { Ban, CircleDollarSign, LockOpen, Plus, RefreshCcw, Trash2, Unlock, UsersRound } from 'lucide-react'
+import { Ban, CircleDollarSign, Copy, LockOpen, Plus, RefreshCcw, Trash2, Unlock, UsersRound } from 'lucide-react'
 import { useState } from 'react'
+import { useClipboard } from '../hooks/useClipboard'
 import { useFutRankStore } from '../store/useFutRankStore'
 import { ATTRIBUTES, DEFAULT_ATTRIBUTES, POSITIONS } from '../utils/player'
 
@@ -13,6 +14,8 @@ function emptyForm() {
 }
 
 export function AdminPage({ onPageChange }) {
+  const group = useFutRankStore((state) => state.group)
+  const isAdmin = useFutRankStore((state) => state.auth.role === 'admin')
   const players = useFutRankStore((state) => state.players)
   const evaluationsOpen = useFutRankStore((state) => state.session.evaluationsOpen)
   const addPlayer = useFutRankStore((state) => state.addPlayer)
@@ -22,8 +25,19 @@ export function AdminPage({ onPageChange }) {
   const setEvaluationsOpen = useFutRankStore((state) => state.setEvaluationsOpen)
   const generateTeams = useFutRankStore((state) => state.generateTeams)
   const rebalanceTeams = useFutRankStore((state) => state.rebalanceTeams)
+  const { copied, copy } = useClipboard()
   const [form, setForm] = useState(emptyForm)
   const [message, setMessage] = useState('')
+
+  if (!isAdmin) {
+    return (
+      <section className="rounded-lg border border-amber-400/30 bg-amber-400/10 p-5 text-amber-100">
+        <p className="text-xs font-black uppercase">Acesso restrito</p>
+        <h1 className="mt-1 text-2xl font-black">Painel do lider</h1>
+        <p className="mt-2 text-sm">Entre com o codigo de lider para cadastrar jogadores, abrir avaliacoes e gerar times.</p>
+      </section>
+    )
+  }
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -52,6 +66,46 @@ export function AdminPage({ onPageChange }) {
       <section>
         <p className="text-xs font-black uppercase text-emerald-300">Controle do lider</p>
         <h1 className="mt-1 text-3xl font-black text-white">Admin</h1>
+      </section>
+
+      <section className="grid gap-3 md:grid-cols-2">
+        <article className="rounded-lg border border-zinc-800 bg-zinc-950/85 p-4">
+          <p className="text-xs font-black uppercase text-zinc-400">Codigo dos jogadores</p>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <strong className="rounded border border-emerald-400/30 bg-emerald-400/10 px-3 py-2 text-lg font-black text-emerald-100">
+              {group?.playerCode ?? 'Indisponivel'}
+            </strong>
+            {group?.playerCode ? (
+              <button
+                className="inline-flex items-center gap-2 rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-black text-zinc-100"
+                onClick={() => copy(group.playerCode)}
+                type="button"
+              >
+                <Copy className="h-4 w-4" aria-hidden="true" />
+                Copiar
+              </button>
+            ) : null}
+          </div>
+        </article>
+        <article className="rounded-lg border border-zinc-800 bg-zinc-950/85 p-4">
+          <p className="text-xs font-black uppercase text-zinc-400">Codigo do lider</p>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <strong className="rounded border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-lg font-black text-amber-100">
+              {group?.adminCode ?? 'Indisponivel'}
+            </strong>
+            {group?.adminCode ? (
+              <button
+                className="inline-flex items-center gap-2 rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-black text-zinc-100"
+                onClick={() => copy(group.adminCode)}
+                type="button"
+              >
+                <Copy className="h-4 w-4" aria-hidden="true" />
+                Copiar
+              </button>
+            ) : null}
+          </div>
+          {copied ? <p className="mt-2 text-xs font-bold text-emerald-300">Codigo copiado.</p> : null}
+        </article>
       </section>
 
       <section className="grid gap-3 md:grid-cols-4">

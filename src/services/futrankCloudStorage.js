@@ -1,4 +1,4 @@
-import { futRankStateId, isSupabaseConfigured, supabase } from '../lib/supabase'
+import { isSupabaseConfigured, supabase } from '../lib/supabase'
 
 const TABLE_NAME = 'futrank_state'
 const SCHEMA_VERSION = 1
@@ -9,13 +9,18 @@ function assertSupabaseConfigured() {
   }
 }
 
-export async function loadFutRankState() {
+function normalizeStateId(stateId) {
+  return String(stateId || '').trim()
+}
+
+export async function loadFutRankState(stateId) {
   assertSupabaseConfigured()
+  const id = normalizeStateId(stateId)
 
   const { data, error } = await supabase
     .from(TABLE_NAME)
     .select('state, updated_at')
-    .eq('id', futRankStateId)
+    .eq('id', id)
     .maybeSingle()
 
   if (error) {
@@ -32,14 +37,15 @@ export async function loadFutRankState() {
   }
 }
 
-export async function saveFutRankState(state) {
+export async function saveFutRankState(stateId, state) {
   assertSupabaseConfigured()
+  const id = normalizeStateId(stateId)
 
   const { data, error } = await supabase
     .from(TABLE_NAME)
     .upsert(
       {
-        id: futRankStateId,
+        id,
         schema_version: SCHEMA_VERSION,
         state,
         updated_at: new Date().toISOString(),
@@ -56,20 +62,21 @@ export async function saveFutRankState(state) {
   return data.updated_at
 }
 
-export function subscribeFutRankState(onChange) {
+export function subscribeFutRankState(stateId, onChange) {
   if (!isSupabaseConfigured || !supabase) {
     return () => {}
   }
 
+  const id = normalizeStateId(stateId)
   const channel = supabase
-    .channel(`futrank-state:${futRankStateId}`)
+    .channel(`futrank-state:${id}`)
     .on(
       'postgres_changes',
       {
         event: '*',
         schema: 'public',
         table: TABLE_NAME,
-        filter: `id=eq.${futRankStateId}`,
+        filter: `id=eq.${id}`,
       },
       (payload) => {
         if (payload.new?.state) {

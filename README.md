@@ -50,6 +50,16 @@ npm run lint
 
 O app usa `localStorage` na chave `futrank-storage-v1` como cache local. Quando `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` estao configuradas, o estado tambem e sincronizado com a tabela `public.futrank_state` no Supabase.
 
+## Acesso por grupo
+
+Ao abrir o app com Supabase configurado, o usuario precisa entrar com um codigo de grupo ou criar um grupo novo.
+
+- O lider cria o grupo no primeiro acesso.
+- O app gera um codigo de jogador, no formato `FR-ABC123`, para compartilhar com a turma.
+- O app gera um codigo de lider, no formato `FR-ABC123-ADM-1A2B`, para acessar o painel Admin.
+- Quem entra com codigo de jogador nao ve o menu Admin e nao consegue cadastrar jogadores, abrir avaliacoes ou gerar times.
+- O painel Admin mostra os dois codigos para o lider copiar e compartilhar.
+
 Para criar a tabela no Supabase:
 
 1. Crie um projeto no Supabase.

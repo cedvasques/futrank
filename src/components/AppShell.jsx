@@ -6,6 +6,7 @@ import {
   Database,
   LayoutDashboard,
   LoaderCircle,
+  LogOut,
   Shield,
   Star,
   Users,
@@ -17,7 +18,7 @@ const navItems = [
   { id: 'players', label: 'Jogadores', icon: Users },
   { id: 'ratings', label: 'Avaliacoes', icon: Star },
   { id: 'teams', label: 'Times', icon: ClipboardList },
-  { id: 'admin', label: 'Admin', icon: Shield },
+  { id: 'admin', label: 'Admin', icon: Shield, adminOnly: true },
   { id: 'ranking', label: 'Ranking', icon: BarChart3 },
 ]
 
@@ -61,8 +62,12 @@ const syncStatusConfig = {
 
 export function AppShell({ activePage, onPageChange, children }) {
   const sync = useFutRankStore((state) => state.sync)
+  const auth = useFutRankStore((state) => state.auth)
+  const logout = useFutRankStore((state) => state.logout)
   const status = syncStatusConfig[sync.status] ?? syncStatusConfig.local
   const StatusIcon = status.icon
+  const visibleNavItems = navItems.filter((item) => !item.adminOnly || auth.role === 'admin')
+  const canLogout = auth.groupId !== 'local'
 
   return (
     <div className="min-h-screen bg-[#060807] text-zinc-100">
@@ -74,23 +79,38 @@ export function AppShell({ activePage, onPageChange, children }) {
             </span>
             <span>
               <strong className="block text-lg font-black text-white">FutRank</strong>
-              <small className="block text-xs text-zinc-400">Pelada equilibrada</small>
+              <small className="block text-xs text-zinc-400">{auth.groupName ?? 'Pelada equilibrada'}</small>
             </span>
           </button>
-          <span
-            className={`hidden items-center gap-2 rounded border px-3 py-1 text-xs font-bold sm:inline-flex ${status.className}`}
-            title={sync.error ?? sync.message}
-          >
-            <StatusIcon
-              className={`h-3.5 w-3.5 ${sync.status === 'loading' || sync.status === 'pending' || sync.status === 'saving' ? 'animate-spin' : ''}`}
-              aria-hidden="true"
-            />
-            {status.label}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="hidden rounded border border-zinc-800 px-3 py-1 text-xs font-bold text-zinc-300 sm:inline-flex">
+              {auth.role === 'admin' ? 'Lider' : 'Jogador'}
+            </span>
+            <span
+              className={`hidden items-center gap-2 rounded border px-3 py-1 text-xs font-bold sm:inline-flex ${status.className}`}
+              title={sync.error ?? sync.message}
+            >
+              <StatusIcon
+                className={`h-3.5 w-3.5 ${sync.status === 'loading' || sync.status === 'pending' || sync.status === 'saving' ? 'animate-spin' : ''}`}
+                aria-hidden="true"
+              />
+              {status.label}
+            </span>
+            {canLogout ? (
+              <button
+                className="inline-grid h-8 w-8 place-items-center rounded-md border border-zinc-800 bg-zinc-950 text-zinc-300 hover:border-emerald-400/60 hover:text-white"
+                onClick={logout}
+                title="Sair"
+                type="button"
+              >
+                <LogOut className="h-4 w-4" aria-hidden="true" />
+              </button>
+            ) : null}
+          </div>
         </div>
 
         <nav className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-4 pb-3">
-          {navItems.map((item) => {
+          {visibleNavItems.map((item) => {
             const Icon = item.icon
             const isActive = activePage === item.id
 

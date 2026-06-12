@@ -7,6 +7,7 @@ export function DashboardPage({ onPageChange }) {
   const players = useFutRankStore((state) => state.players)
   const teams = useFutRankStore((state) => state.teams)
   const evaluationsOpen = useFutRankStore((state) => state.session.evaluationsOpen)
+  const isAdmin = useFutRankStore((state) => state.auth.role === 'admin')
 
   const presentes = players.filter((player) => player.presenceConfirmed)
   const elegiveis = players.filter(canEnterDraw)
@@ -27,7 +28,7 @@ export function DashboardPage({ onPageChange }) {
               Controle presenca, pagamento, avaliacoes coletivas e monte dois times equilibrados com base no overall.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className={`grid gap-2 ${isAdmin ? 'grid-cols-2' : 'grid-cols-1'}`}>
             <button
               className="rounded-md border border-emerald-400 bg-emerald-400 px-3 py-3 text-sm font-black text-emerald-950"
               onClick={() => onPageChange('players')}
@@ -35,13 +36,15 @@ export function DashboardPage({ onPageChange }) {
             >
               Confirmar presença
             </button>
-            <button
-              className="rounded-md border border-zinc-700 bg-zinc-950 px-3 py-3 text-sm font-black text-zinc-100"
-              onClick={() => onPageChange('admin')}
-              type="button"
-            >
-              Painel Admin
-            </button>
+            {isAdmin ? (
+              <button
+                className="rounded-md border border-zinc-700 bg-zinc-950 px-3 py-3 text-sm font-black text-zinc-100"
+                onClick={() => onPageChange('admin')}
+                type="button"
+              >
+                Painel Admin
+              </button>
+            ) : null}
           </div>
         </div>
       </section>
