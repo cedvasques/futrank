@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AppShell } from './components/AppShell'
 import { AdminPage } from './pages/AdminPage'
 import { DashboardPage } from './pages/DashboardPage'
@@ -6,6 +6,7 @@ import { EvaluationsPage } from './pages/EvaluationsPage'
 import { PlayersPage } from './pages/PlayersPage'
 import { RankingPage } from './pages/RankingPage'
 import { TeamsPage } from './pages/TeamsPage'
+import { useFutRankStore } from './store/useFutRankStore'
 
 const pages = {
   dashboard: DashboardPage,
@@ -18,7 +19,12 @@ const pages = {
 
 function App() {
   const [activePage, setActivePage] = useState('dashboard')
+  const initializeCloudSync = useFutRankStore((state) => state.initializeCloudSync)
   const Page = pages[activePage]
+
+  useEffect(() => {
+    initializeCloudSync()
+  }, [initializeCloudSync])
 
   return (
     <AppShell activePage={activePage} onPageChange={setActivePage}>

@@ -1,4 +1,16 @@
-import { BarChart3, ClipboardList, LayoutDashboard, Shield, Star, Users } from 'lucide-react'
+import {
+  AlertTriangle,
+  BarChart3,
+  ClipboardList,
+  CloudOff,
+  Database,
+  LayoutDashboard,
+  LoaderCircle,
+  Shield,
+  Star,
+  Users,
+} from 'lucide-react'
+import { useFutRankStore } from '../store/useFutRankStore'
 
 const navItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -9,7 +21,49 @@ const navItems = [
   { id: 'ranking', label: 'Ranking', icon: BarChart3 },
 ]
 
+const syncStatusConfig = {
+  error: {
+    icon: AlertTriangle,
+    label: 'Erro no banco',
+    className: 'border-red-400/40 text-red-200',
+  },
+  idle: {
+    icon: Database,
+    label: 'Supabase',
+    className: 'border-emerald-400/30 text-emerald-200',
+  },
+  loading: {
+    icon: LoaderCircle,
+    label: 'Conectando',
+    className: 'border-sky-400/40 text-sky-200',
+  },
+  local: {
+    icon: CloudOff,
+    label: 'Somente local',
+    className: 'border-zinc-700 text-zinc-300',
+  },
+  pending: {
+    icon: LoaderCircle,
+    label: 'Pendente',
+    className: 'border-amber-400/40 text-amber-200',
+  },
+  saving: {
+    icon: LoaderCircle,
+    label: 'Salvando',
+    className: 'border-amber-400/40 text-amber-200',
+  },
+  synced: {
+    icon: Database,
+    label: 'Supabase',
+    className: 'border-emerald-400/30 text-emerald-200',
+  },
+}
+
 export function AppShell({ activePage, onPageChange, children }) {
+  const sync = useFutRankStore((state) => state.sync)
+  const status = syncStatusConfig[sync.status] ?? syncStatusConfig.local
+  const StatusIcon = status.icon
+
   return (
     <div className="min-h-screen bg-[#060807] text-zinc-100">
       <header className="sticky top-0 z-20 border-b border-zinc-800 bg-[#060807]/95 backdrop-blur">
@@ -23,8 +77,15 @@ export function AppShell({ activePage, onPageChange, children }) {
               <small className="block text-xs text-zinc-400">Pelada equilibrada</small>
             </span>
           </button>
-          <span className="hidden rounded border border-emerald-400/30 px-3 py-1 text-xs font-bold text-emerald-200 sm:inline-flex">
-            PWA MVP
+          <span
+            className={`hidden items-center gap-2 rounded border px-3 py-1 text-xs font-bold sm:inline-flex ${status.className}`}
+            title={sync.error ?? sync.message}
+          >
+            <StatusIcon
+              className={`h-3.5 w-3.5 ${sync.status === 'loading' || sync.status === 'pending' || sync.status === 'saving' ? 'animate-spin' : ''}`}
+              aria-hidden="true"
+            />
+            {status.label}
           </span>
         </div>
 
