@@ -2,7 +2,7 @@ import { KeyRound, LogIn, PlusCircle, Shield } from 'lucide-react'
 import { useState } from 'react'
 import { useFutRankStore } from '../store/useFutRankStore'
 
-export function LoginPage() {
+export function LoginPage({ onPageSelect }) {
   const authError = useFutRankStore((state) => state.auth.error)
   const sync = useFutRankStore((state) => state.sync)
   const createGroup = useFutRankStore((state) => state.createGroup)
@@ -23,6 +23,8 @@ export function LoginPage() {
 
     if (!result.ok) {
       setMessage(result.message)
+    } else {
+      onPageSelect?.('admin')
     }
 
     setIsSubmitting(false)

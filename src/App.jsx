@@ -39,7 +39,7 @@ function App() {
   }
 
   if (authStatus !== 'authenticated') {
-    return <LoginPage />
+    return <LoginPage onPageSelect={setActivePage} />
   }
 
   const effectivePage = authRole === 'admin' || activePage !== 'admin' ? activePage : 'dashboard'
